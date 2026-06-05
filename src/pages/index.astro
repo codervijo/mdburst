@@ -1,0 +1,58 @@
+---
+// src/pages/index.astro
+const site = "https://mdburst.com";
+const title = "mdburst.com";
+const description = "<fill in: 1-2 sentence value prop for SEO description>";
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={site} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={site} />
+    <meta property="og:site_name" content="mdburst.com" />
+
+    <!-- Twitter card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <!-- JSON-LD structured data: Organization + WebSite (static; domain
+         is known at scaffold time. Update description by hand if needed.) -->
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://mdburst.com/#organization",
+      "name": "mdburst.com",
+      "url": "https://mdburst.com/"
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://mdburst.com/#website",
+      "url": "https://mdburst.com/",
+      "name": "mdburst.com",
+      "publisher": { "@id": "https://mdburst.com/#organization" }
+    }
+  ]
+}
+    </script>
+  </head>
+  <body>
+    <main>
+      <h1>{title}</h1>
+      <p>Scaffolded via <code>portfolio new bootstrap</code>.</p>
+    </main>
+  </body>
+</html>

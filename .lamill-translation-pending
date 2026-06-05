@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "source_stack": "tanstack-start",
+  "source_signals": [
+    "dependency:@tanstack/react-query",
+    "file:src/server.ts"
+  ],
+  "scaffolded_at": "2026-06-05",
+  "next_step": "Run `lamill project translate <domain>` to port pages/components from genai/ into the Astro scaffold. Budget defaults to $5.00, timeout to 30 minutes; both configurable via --budget / --timeout flags."
+}

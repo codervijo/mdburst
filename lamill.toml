@@ -1,0 +1,52 @@
+# lamill.toml — per-site config consumed by lamill (portfolio/ops) and rankmill (content/audits).
+# [content] = stable identity, authored by hand. [todo] = volatile work state.
+# rankmill output lives in sites/<domain>/rankmill-output/, not here.
+
+schema = "lamill-toml-v1"
+
+[deploy]
+platform = "cf-pages"
+production_branch = "main"
+custom_domains = [
+    "mdburst.com",
+]
+
+[stack]
+framework = "astro"
+
+# Tracked todos for mdburst.com. status: "done" | "open".
+[[todo]]
+status = "open"
+priority = "medium"
+task = "Check SEO: GSC indexation + coverage (revisit ~2026-06-19)"
+
+[[todo]]
+status = "open"
+priority = "medium"
+task = "Verify GA4 is receiving data (check Realtime after first traffic)"
+
+[[todo]]
+status = "open"
+priority = "low"
+task = "Confirm GSC verification + sitemap submitted (re-run deploy if it timed out)"
+
+[content]
+# Declarative content identity for this site.
+# Authored by the human; consumed by rankmill to generate drafts and run audits.
+# Leave fields empty until you have a deliberate answer. Empty is better than wrong.
+site_type = "tool"
+primary_keyword = "markdown publishing workflow"
+secondary_keywords = [
+    "markdown to Ghost",
+    "markdown newsletter formatting",
+    "LinkedIn formatting fixes",
+    "social thread splitting",
+    "Obsidian to blog workflow",
+    "markdown publishing templates",
+    "free markdown converter",
+]
+icp = "The strongest ICP is a weekly publisher who already writes in markdown and distributes every post to at least three places: a blog, a newsletter, and one or more social platforms. They feel the pain every week, value workflow speed, dislike generic AI writing tools, and will pay for formatting reliability, preview accuracy, and one-click publishing more than content generation."
+urgency_trigger = "Recurring weekly pain of manual reformatting for multi-channel publishing"
+penalty = "Ongoing weekly time wasted, inconsistent or broken formatting across platforms, and slower publishing cadence"
+tone = "practical, instructional, no-nonsense"
+law = ""                  # statute or regulation if applicable, else empty
