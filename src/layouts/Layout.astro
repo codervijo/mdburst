@@ -1,0 +1,17 @@
+---
+// src/layouts/Layout.astro — shared HTML shell / chrome.
+// Pass document-specific <head> tags via the named "head" slot; page body
+// goes in the default slot.
+import "../styles/global.css";
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <slot name="head" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

@@ -1,14 +1,15 @@
 ---
 // src/pages/index.astro
+import Layout from "../layouts/Layout.astro";
+import LandingPage from "../components/LandingPage.tsx";
+
 const site = "https://mdburst.com";
-const title = "mdburst.com";
-const description = "<fill in: 1-2 sentence value prop for SEO description>";
+const title = "mdburst — Write once in markdown. Publish everywhere.";
+const description =
+  "mdburst converts one markdown draft into platform-ready blog posts, newsletters, LinkedIn posts, and social threads — with formatting that survives the trip.";
 ---
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<Layout>
+  <Fragment slot="head">
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={site} />
@@ -16,43 +17,42 @@ const description = "<fill in: 1-2 sentence value prop for SEO description>";
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:title" content="mdburst — Write once. Publish everywhere." />
+    <meta
+      property="og:description"
+      content="Turn one markdown draft into publish-ready posts for Ghost, newsletters, LinkedIn, and social threads."
+    />
     <meta property="og:url" content={site} />
     <meta property="og:site_name" content="mdburst.com" />
 
     <!-- Twitter card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:title" content="mdburst — Write once. Publish everywhere." />
+    <meta
+      name="twitter:description"
+      content="Turn one markdown draft into publish-ready posts for Ghost, newsletters, LinkedIn, and social threads."
+    />
 
-    <!-- JSON-LD structured data: Organization + WebSite (static; domain
-         is known at scaffold time. Update description by hand if needed.) -->
-    <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": "https://mdburst.com/#organization",
-      "name": "mdburst.com",
-      "url": "https://mdburst.com/"
-    },
-    {
-      "@type": "WebSite",
-      "@id": "https://mdburst.com/#website",
-      "url": "https://mdburst.com/",
-      "name": "mdburst.com",
-      "publisher": { "@id": "https://mdburst.com/#organization" }
-    }
-  ]
-}
-    </script>
-  </head>
-  <body>
-    <main>
-      <h1>{title}</h1>
-      <p>Scaffolded via <code>portfolio new bootstrap</code>.</p>
-    </main>
-  </body>
-</html>
+    <!-- JSON-LD structured data: Organization + WebSite -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://mdburst.com/#organization",
+          "name": "mdburst.com",
+          "url": "https://mdburst.com/"
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://mdburst.com/#website",
+          "url": "https://mdburst.com/",
+          "name": "mdburst.com",
+          "publisher": { "@id": "https://mdburst.com/#organization" }
+        }
+      ]
+    })} />
+  </Fragment>
+
+  <LandingPage client:load />
+</Layout>
