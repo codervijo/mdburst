@@ -24,3 +24,6 @@ build/
 
 # Caches
 .eslintcache
+
+# Astro (generated content cache + types — never tracked)
+.astro/
