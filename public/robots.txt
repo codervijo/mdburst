@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mdburst.com/sitemap.xml
+Sitemap: https://mdburst.com/sitemap-index.xml
