@@ -1,0 +1,60 @@
+---
+// Footer for /tools/* pages. Lists every tool so each one is reachable in one
+// hop from any other — internal linking that also holds for crawlers, since
+// this is static HTML rather than a hydrated island.
+import { TOOLS } from "../../data/tools";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-24 border-t border-border">
+  <div class="mx-auto max-w-6xl px-6 py-12">
+    <div class="grid gap-10 sm:grid-cols-3">
+      <div>
+        <div class="flex items-center gap-2 font-semibold tracking-tight">
+          <span
+            aria-hidden="true"
+            class="grid h-7 w-7 place-items-center rounded-lg bg-foreground text-xs font-bold text-background"
+          >md</span>
+          <span>mdburst</span>
+        </div>
+        <p class="mt-3 max-w-xs text-xs text-muted-foreground">
+          Write once in Markdown. Publish everywhere — blog, newsletter, LinkedIn and
+          social threads, without reformatting each one by hand.
+        </p>
+      </div>
+
+      <nav aria-label="Free tools">
+        <h2 class="text-xs font-medium text-foreground">Free tools</h2>
+        <ul class="mt-3 space-y-2 text-xs text-muted-foreground">
+          {
+            TOOLS.map((tool) => (
+              <li>
+                <a href={tool.path} class="transition-colors hover:text-foreground">
+                  {tool.h1}
+                </a>
+              </li>
+            ))
+          }
+          <li>
+            <a href="/tools/" class="transition-colors hover:text-foreground">All tools</a>
+          </li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Product">
+        <h2 class="text-xs font-medium text-foreground">Product</h2>
+        <ul class="mt-3 space-y-2 text-xs text-muted-foreground">
+          <li><a href="/#how" class="transition-colors hover:text-foreground">How it works</a></li>
+          <li><a href="/#features" class="transition-colors hover:text-foreground">Features</a></li>
+          <li><a href="/#pricing" class="transition-colors hover:text-foreground">Pricing</a></li>
+          <li><a href="/#waitlist" class="transition-colors hover:text-foreground">Join the waitlist</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <p class="mt-10 border-t border-border pt-6 text-xs text-muted-foreground">
+      © {year} mdburst.com — conversions run in your browser; files are never uploaded.
+    </p>
+  </div>
+</footer>

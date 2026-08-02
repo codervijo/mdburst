@@ -1,0 +1,46 @@
+---
+// Related-tools block. Cross-links the converters to each other and back to the
+// directory and product pages, so every tool page is one hop from the rest of
+// the site for both readers and crawlers.
+import { relatedTools } from "../../data/tools";
+
+interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+const related = relatedTools(slug);
+---
+
+<section id="related-tools" class="mx-auto max-w-3xl px-6 py-10 sm:py-12">
+  <h2 class="text-2xl font-semibold tracking-tight sm:text-3xl">Related tools</h2>
+
+  <div class="mt-6 grid gap-3 sm:grid-cols-2">
+    {
+      related.map((tool) => (
+        <a
+          href={tool.path}
+          class="group rounded-xl border border-border bg-card p-4 transition-colors hover:border-foreground/25 hover:bg-muted/40"
+        >
+          <span class="block text-sm font-medium text-foreground">{tool.h1}</span>
+          <span class="mt-1 block text-xs text-muted-foreground">{tool.summary}</span>
+        </a>
+      ))
+    }
+    <a
+      href="/tools/"
+      class="group rounded-xl border border-border bg-card p-4 transition-colors hover:border-foreground/25 hover:bg-muted/40"
+    >
+      <span class="block text-sm font-medium text-foreground">All free Markdown tools</span>
+      <span class="mt-1 block text-xs text-muted-foreground">
+        Every converter on mdburst, in one place.
+      </span>
+    </a>
+  </div>
+
+  <p class="mt-6 text-sm text-muted-foreground">
+    Converting files is the first step. If you publish the same draft to more than one
+    place, see <a href="/#how" class="underline underline-offset-4 hover:text-foreground">how mdburst works</a>
+    or <a href="/#waitlist" class="underline underline-offset-4 hover:text-foreground">join the waitlist</a>.
+  </p>
+</section>

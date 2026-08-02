@@ -8,7 +8,9 @@ export function Footer() {
           <Logo />
           <span className="text-xs text-muted-foreground">© {new Date().getFullYear()}</span>
         </div>
-        <div className="flex items-center gap-6 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
+          <a href="/tools/pdf-to-markdown/" className="hover:text-foreground">PDF to Markdown</a>
+          <a href="/tools/markdown-to-docx/" className="hover:text-foreground">Markdown to DOCX</a>
           <a href="#features" className="hover:text-foreground">Features</a>
           <a href="#pricing" className="hover:text-foreground">Pricing</a>
           <a href="#waitlist" className="hover:text-foreground">Waitlist</a>

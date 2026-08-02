@@ -1,0 +1,243 @@
+---
+// src/pages/tools/markdown-to-docx.astro
+//
+// Static copy + one React island for the converter, matching the sibling
+// PDF to Markdown page.
+import ToolLayout from "../../layouts/ToolLayout.astro";
+import ToolSection from "../../components/tools/ToolSection.astro";
+import Faq from "../../components/tools/Faq.astro";
+import RelatedTools from "../../components/tools/RelatedTools.astro";
+import MarkdownToDocx from "../../components/tools/MarkdownToDocx.tsx";
+import { getTool } from "../../data/tools";
+import { faqPageSchema, webApplicationSchema } from "../../lib/schema";
+
+const tool = getTool("markdown-to-docx");
+
+const breadcrumbs = [
+  { name: "Home", path: "/" },
+  { name: "Tools", path: "/tools/" },
+  { name: tool.shortName, path: tool.path },
+];
+---
+
+<ToolLayout
+  title={tool.title}
+  description={tool.metaDescription}
+  path={tool.path}
+  breadcrumbs={breadcrumbs}
+  jsonLd={[webApplicationSchema(tool), faqPageSchema(tool)]}
+>
+  <!-- TOOL INTERFACE — above the fold -->
+  <section id="converter" class="mx-auto max-w-5xl px-6 pb-6 pt-6">
+    <h1 class="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
+      Markdown to DOCX Converter
+    </h1>
+    <p class="mt-4 max-w-3xl text-base text-muted-foreground">
+      Convert Markdown to DOCX in your browser and get a real Word document —
+      not Markdown source pasted into a page. Headings become Word heading
+      styles, tables become native tables, and lists keep their numbering. Paste
+      your text, check the live preview, and download the .docx.
+    </p>
+
+    <div class="mt-6">
+      <MarkdownToDocx client:load />
+    </div>
+
+    <p class="mt-3 text-xs text-muted-foreground">
+      Free, no signup, nothing uploaded. Works offline once the page has loaded.
+    </p>
+  </section>
+
+  <ToolSection
+    id="how-it-works"
+    title="How it works"
+    lead="Structure in, structure out."
+  >
+    <p>
+      The easy way to produce a .docx from Markdown is to drop the raw text into
+      a single Word paragraph and call it converted. The result opens, but every
+      heading is still a line beginning with a hash, the tables are still rows of
+      pipes, and none of Word's features apply to any of it. This converter does
+      the harder thing: it rebuilds the document as Office Open XML.
+    </p>
+    <ol>
+      <li>
+        <strong>Parse to a syntax tree.</strong> Your Markdown is tokenised into
+        a nested tree of blocks and inline nodes — the same parse that drives the
+        live preview, so what you see is what gets converted.
+      </li>
+      <li>
+        <strong>Map each node to its Word equivalent.</strong> A level-two
+        heading becomes Word's built-in Heading 2 style. A table becomes a
+        <code>w:tbl</code> with a repeating header row. An ordered list becomes
+        paragraphs bound to a shared numbering definition, so Word renumbers them
+        correctly when you insert an item.
+      </li>
+      <li>
+        <strong>Package as a .docx.</strong> The document parts are zipped into
+        the standard container and saved straight to your downloads folder.
+      </li>
+    </ol>
+    <p>
+      The practical difference shows up the moment you open the file. Word's
+      navigation pane lists your headings. Changing the document theme restyles
+      every heading at once. Exporting to PDF produces a real bookmark tree.
+      Generating a table of contents works. None of that is possible when
+      headings are merely large bold text.
+    </p>
+  </ToolSection>
+
+  <ToolSection
+    id="supported-formatting"
+    title="Supported formatting"
+    lead="GitHub-flavored Markdown, mapped to native Word constructs."
+  >
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Markdown</th>
+          <th scope="col">In the .docx</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code># </code> through <code>###### </code></td>
+          <td>Heading 1–6 built-in styles</td>
+        </tr>
+        <tr>
+          <td>Paragraphs</td>
+          <td>Separate paragraphs with spacing</td>
+        </tr>
+        <tr>
+          <td><code>**bold**</code>, <code>*italic*</code>, <code>~~strike~~</code></td>
+          <td>Run formatting, combinable when nested</td>
+        </tr>
+        <tr>
+          <td><code>- item</code> / <code>1. item</code></td>
+          <td>Bulleted and numbered lists, nested to five levels</td>
+        </tr>
+        <tr>
+          <td><code>- [x] task</code></td>
+          <td>List item prefixed with a ballot box character</td>
+        </tr>
+        <tr>
+          <td><code>[text](url)</code></td>
+          <td>Clickable hyperlink using Word's Hyperlink style</td>
+        </tr>
+        <tr>
+          <td><code>&gt; quote</code></td>
+          <td>Indented paragraph with a left rule</td>
+        </tr>
+        <tr>
+          <td>Fenced and inline code</td>
+          <td>Monospaced runs on a shaded background, line breaks preserved</td>
+        </tr>
+        <tr>
+          <td>Pipe tables</td>
+          <td>Native table, bold header row that repeats across pages, alignment kept</td>
+        </tr>
+        <tr>
+          <td><code>---</code></td>
+          <td>Horizontal rule as a bottom-bordered paragraph</td>
+        </tr>
+        <tr>
+          <td><code>![alt](src)</code></td>
+          <td>Italic <code>[image: alt]</code> placeholder — see limitations</td>
+        </tr>
+      </tbody>
+    </table>
+  </ToolSection>
+
+  <ToolSection
+    id="example"
+    title="Example"
+    lead="What a nested structure turns into."
+  >
+    <p>This input:</p>
+    <pre><code>## Release notes
+
+1. Fixed the export path
+   - Windows only
+2. Added **table** support
+
+&gt; Upgrade before Friday.
+
+| Change | Status |
+| --- | ---: |
+| Export | Done |</code></pre>
+    <p>
+      produces a Word document containing a Heading 2, a two-item numbered list
+      with a bulleted sub-item at level two, a bold run inside the second item, an
+      indented and ruled quotation, and a two-column table whose header row is
+      bold and whose second column is right-aligned. Every one of those is a real
+      Word object: click into the list and Word offers list controls; click into
+      the table and Word offers table tools.
+    </p>
+    <p>
+      Press <em>Load example</em> in the converter above to run a longer version
+      of this through the tool and inspect the result yourself.
+    </p>
+  </ToolSection>
+
+  <ToolSection
+    id="privacy"
+    title="Privacy"
+    lead="Your draft is never transmitted."
+  >
+    <p>
+      The document is assembled by JavaScript in this tab and handed to the
+      browser's download mechanism as a local blob. Nothing is posted, logged or
+      retained. This site is statically hosted and has no endpoint that could
+      receive your text even if the code tried to send it.
+    </p>
+    <p>
+      You can confirm this the same way you would for any such claim: watch the
+      network panel while converting, or disconnect from the internet after the
+      page loads and convert anyway. Unpublished drafts, client work and internal
+      documents can go through this tool without leaving your machine.
+    </p>
+  </ToolSection>
+
+  <ToolSection
+    id="limitations"
+    title="Limitations"
+    lead="What this converter does not do."
+  >
+    <ul>
+      <li>
+        <strong>Images are placeholders, not pictures.</strong> Embedding an
+        image means fetching it, and fetching it means a network request — which
+        would break the guarantee above. Each reference is kept as visible alt
+        text for you to reinsert in Word.
+      </li>
+      <li>
+        <strong>Raw HTML is flattened.</strong> Markdown permits arbitrary HTML,
+        and Word has no equivalent for most of it. HTML blocks are reduced to
+        their visible text; scripts, iframes and styling are discarded.
+      </li>
+      <li>
+        <strong>No custom templates yet.</strong> The output uses Word's default
+        styles. You can apply your own template afterwards — because the headings
+        are real styles, restyling is a single operation in Word rather than a
+        manual pass.
+      </li>
+      <li>
+        <strong>Footnotes and citations are not converted.</strong> Markdown
+        footnote syntax is not part of GitHub-flavored Markdown and is rendered
+        as literal text.
+      </li>
+      <li>
+        <strong>Math is not rendered.</strong> LaTeX or MathJax expressions pass
+        through as plain text rather than becoming Word equations.
+      </li>
+      <li>
+        <strong>Nesting beyond five list levels is flattened</strong> to the
+        fifth level, which is the depth the numbering definition covers.
+      </li>
+    </ul>
+  </ToolSection>
+
+  <Faq faqs={tool.faqs} />
+
+  <RelatedTools slug={tool.slug} />
+</ToolLayout>

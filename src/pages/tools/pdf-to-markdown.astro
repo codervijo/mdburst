@@ -1,0 +1,291 @@
+---
+// src/pages/tools/pdf-to-markdown.astro
+//
+// All copy is statically rendered by Astro. Only the converter itself is a
+// React island, so every word below is in the initial HTML response.
+import ToolLayout from "../../layouts/ToolLayout.astro";
+import ToolSection from "../../components/tools/ToolSection.astro";
+import Faq from "../../components/tools/Faq.astro";
+import RelatedTools from "../../components/tools/RelatedTools.astro";
+import PdfToMarkdown from "../../components/tools/PdfToMarkdown.tsx";
+import { getTool } from "../../data/tools";
+import { faqPageSchema, webApplicationSchema } from "../../lib/schema";
+
+const tool = getTool("pdf-to-markdown");
+
+const breadcrumbs = [
+  { name: "Home", path: "/" },
+  { name: "Tools", path: "/tools/" },
+  { name: tool.shortName, path: tool.path },
+];
+---
+
+<ToolLayout
+  title={tool.title}
+  description={tool.metaDescription}
+  path={tool.path}
+  breadcrumbs={breadcrumbs}
+  jsonLd={[webApplicationSchema(tool), faqPageSchema(tool)]}
+>
+  <!-- TOOL INTERFACE — kept at the top so it is usable without scrolling -->
+  <section id="converter" class="mx-auto max-w-3xl px-6 pb-6 pt-6">
+    <h1 class="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
+      PDF to Markdown Converter
+    </h1>
+    <p class="mt-4 text-base text-muted-foreground">
+      Convert PDF to Markdown directly in your browser. Drop a file below and this
+      PDF to Markdown converter reads its text layer, infers the headings, lists,
+      tables, links and code blocks, and hands back clean Markdown you can edit,
+      copy or download. The file never leaves your device.
+    </p>
+
+    <div class="mt-6">
+      <PdfToMarkdown client:load />
+    </div>
+
+    <p class="mt-3 text-xs text-muted-foreground">
+      Free, no signup, no file stored. Works offline once the page has loaded.
+    </p>
+  </section>
+
+  <ToolSection
+    id="how-it-works"
+    title="How it works"
+    lead="Four steps, all of them local to your machine."
+  >
+    <p>
+      A PDF does not store a document the way a word processor does. It stores
+      instructions for painting glyphs at coordinates on a page. There is no
+      record that a line is a heading, that three lines belong to the same list,
+      or that a block of text is a table — that structure is something a reader
+      infers from size, position and spacing. Converting a PDF to Markdown means
+      rebuilding those inferences.
+    </p>
+    <ol>
+      <li>
+        <strong>Read the text layer.</strong> The file is opened with Mozilla's
+        pdf.js inside your browser. Every text fragment comes back with its
+        position, width and font, which is the raw material for everything else.
+      </li>
+      <li>
+        <strong>Rebuild lines and columns.</strong> Fragments on the same
+        baseline are joined into lines, and wide horizontal gaps within a line
+        are treated as cell boundaries — the signal used later to spot tables.
+      </li>
+      <li>
+        <strong>Classify each line.</strong> Text larger than the document's body
+        size becomes a heading, with the largest size mapped to <code>#</code>,
+        the next largest to <code>##</code> and so on. Lines starting with a
+        bullet glyph or a number become list items. Lines set in a monospaced
+        font become fenced code. Running headers and page numbers that repeat in
+        the margins across pages are dropped.
+      </li>
+      <li>
+        <strong>Emit Markdown.</strong> Wrapped lines are rejoined into
+        paragraphs, words hyphenated across a line break are repaired, link
+        annotations become Markdown links, and characters that would be read as
+        Markdown syntax are escaped.
+      </li>
+    </ol>
+    <p>
+      Because the inference runs on geometry, the output quality tracks how
+      conventionally the PDF was laid out. A report exported from Word, Google
+      Docs, LaTeX or a static site generator converts well. A magazine spread
+      does not.
+    </p>
+  </ToolSection>
+
+  <ToolSection
+    id="supported-formatting"
+    title="Supported formatting"
+    lead="What the converter recognises, and how reliably."
+  >
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Element</th>
+          <th scope="col">Markdown output</th>
+          <th scope="col">Reliability</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Headings</td>
+          <td><code># </code> to <code>###### </code></td>
+          <td>Good when heading sizes differ from body text</td>
+        </tr>
+        <tr>
+          <td>Paragraphs</td>
+          <td>Blank-line separated, wrapped lines rejoined</td>
+          <td>Good</td>
+        </tr>
+        <tr>
+          <td>Bulleted lists</td>
+          <td><code>- item</code>, nested by indentation</td>
+          <td>Good</td>
+        </tr>
+        <tr>
+          <td>Numbered lists</td>
+          <td><code>1. item</code>, original numbers kept</td>
+          <td>Good</td>
+        </tr>
+        <tr>
+          <td>Links</td>
+          <td><code>[text](url)</code> from PDF annotations</td>
+          <td>Good where the PDF stores real link annotations</td>
+        </tr>
+        <tr>
+          <td>Bare URLs</td>
+          <td><code>&lt;https://…&gt;</code></td>
+          <td>Good</td>
+        </tr>
+        <tr>
+          <td>Tables</td>
+          <td>GitHub-flavored pipe tables</td>
+          <td>Fair — simple grids only</td>
+        </tr>
+        <tr>
+          <td>Code blocks</td>
+          <td>Fenced with <code>```</code></td>
+          <td>Fair — depends on a monospaced font being used</td>
+        </tr>
+        <tr>
+          <td>Bold and italic</td>
+          <td>Not emitted</td>
+          <td>Not supported — see limitations</td>
+        </tr>
+        <tr>
+          <td>Images</td>
+          <td>Not extracted</td>
+          <td>Not supported</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Unicode is preserved throughout, including non-Latin scripts, accented
+      characters, mathematical symbols and emoji, provided the PDF embeds the
+      correct character mapping.
+    </p>
+  </ToolSection>
+
+  <ToolSection
+    id="example"
+    title="Example"
+    lead="A two-page report, before and after."
+  >
+    <p>
+      Given a PDF page whose first line is set in 24pt, a subheading in 18pt,
+      body copy in 11pt, three bulleted lines, and a two-column grid of figures,
+      the converter produces:
+    </p>
+    <pre><code># Quarterly Revenue Report
+
+## Regional performance
+
+Revenue grew across all three regions in the period, with the
+strongest contribution from the northern territory.
+
+- North: ahead of plan
+- Central: on plan
+- South: behind plan
+
+| Region | Revenue |
+| --- | --- |
+| North | 412,000 |
+| Central | 388,000 |
+| South | 194,000 |
+
+Full methodology is available at &lt;https://example.com/methodology&gt;.</code></pre>
+    <p>
+      Note what happened: the 24pt line became an H1 and the 18pt line an H2,
+      not because of any absolute size threshold but because they are the two
+      largest sizes above body text. The wrapped sentence was rejoined into one
+      paragraph. The figure grid became a table because both rows shared the
+      same column edges. The footer URL became an autolink. The page number that
+      sat at the bottom of both pages was removed.
+    </p>
+  </ToolSection>
+
+  <ToolSection
+    id="privacy"
+    title="Privacy"
+    lead="The file stays on your computer. This is architectural, not a policy."
+  >
+    <p>
+      There is no upload. The PDF is read through the browser's File API,
+      decoded by a WebAssembly-free JavaScript parser running in a web worker on
+      this same origin, and converted to Markdown in the page. No request
+      carrying your file contents is ever made, because this site is a static
+      page with no server-side component to receive one.
+    </p>
+    <p>
+      Two ways to verify that yourself: open your browser's network panel and
+      watch it while you convert — you will see the parser being fetched and
+      nothing being sent — or load this page, disconnect from the internet, and
+      convert a file anyway. It works.
+    </p>
+    <p>
+      The practical consequence is that confidential material — contracts,
+      medical records, unpublished drafts, anything under NDA — can be converted
+      without it crossing a network boundary. It also means the size limits
+      below exist: your own device is doing the work.
+    </p>
+  </ToolSection>
+
+  <ToolSection
+    id="limitations"
+    title="Limitations"
+    lead="Where this converter is weak, stated plainly."
+  >
+    <p>
+      No PDF-to-Markdown conversion is exact, and this one does not claim to be.
+      Expect to edit the output — that is why it is presented in an editable box
+      rather than as a finished download.
+    </p>
+    <ul>
+      <li>
+        <strong>Scanned documents produce nothing.</strong> A scan is an image.
+        There is no text to extract, and you will get an empty result with a
+        warning. Run the file through OCR first.
+      </li>
+      <li>
+        <strong>Bold and italic are not detected.</strong> Emphasis in a PDF is
+        usually a separate embedded font rather than a style flag, and inferring
+        it reliably across arbitrary font naming conventions produces more false
+        positives than it is worth. Emphasis is lost.
+      </li>
+      <li>
+        <strong>Multi-column layouts interleave.</strong> Academic papers and
+        newsletters set in two or three columns are read in visual line order,
+        so text from adjacent columns can alternate. Single-column documents are
+        what this handles well.
+      </li>
+      <li>
+        <strong>Complex tables drift.</strong> Merged cells, cells wrapping onto
+        several lines, and layouts using invisible tables purely for positioning
+        will come out misaligned or be missed entirely.
+      </li>
+      <li>
+        <strong>Images are not extracted.</strong> Figures, charts and logos are
+        skipped; only text is converted.
+      </li>
+      <li>
+        <strong>Footnotes lose their anchors.</strong> Footnote text is usually
+        captured, but the superscript reference that pointed to it is not linked.
+      </li>
+      <li>
+        <strong>Size limits apply.</strong> 25 MB and 500 pages, because the work
+        happens on your device.
+      </li>
+    </ul>
+    <p>
+      If your source document still exists in its original format, converting
+      from that will always beat converting from its PDF export. Reach for this
+      tool when the PDF is all you have.
+    </p>
+  </ToolSection>
+
+  <Faq faqs={tool.faqs} />
+
+  <RelatedTools slug={tool.slug} />
+</ToolLayout>

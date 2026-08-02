@@ -1,0 +1,264 @@
+---
+// src/pages/tools/index.astro — topical hub for the free Markdown converters.
+//
+// This is a hub, not a directory listing: it has to be worth reading on its own
+// for someone deciding which converter they need, and it has to pass authority
+// down to the two tool pages. Cards, the comparison table and the FAQ all read
+// from src/data/tools.ts so adding a third tool never leaves this page stale.
+//
+// Every link here points at a page that exists — the two tools, the tool-page
+// sections, and the landing-page anchors. There is no /guides/ section on this
+// site, so "Related guides" deep-links into real on-page sections instead of
+// inventing URLs.
+import ToolLayout from "../../layouts/ToolLayout.astro";
+import ToolSection from "../../components/tools/ToolSection.astro";
+import Faq from "../../components/tools/Faq.astro";
+import { TOOLS, HUB_FAQS, getTool } from "../../data/tools";
+import { faqSchemaFromEntries, toolListSchema } from "../../lib/schema";
+
+const breadcrumbs = [
+  { name: "Home", path: "/" },
+  { name: "Tools", path: "/tools/" },
+];
+
+const pdf = getTool("pdf-to-markdown");
+const docx = getTool("markdown-to-docx");
+
+const title = "Markdown Tools – Free Online Markdown Converters | mdburst";
+const description =
+  "Free online Markdown converters that run in your browser. Convert PDF to Markdown, export Markdown to DOCX, and compare which tool fits your workflow. No upload, no signup.";
+---
+
+<ToolLayout
+  title={title}
+  description={description}
+  path="/tools/"
+  breadcrumbs={breadcrumbs}
+  jsonLd={[toolListSchema(TOOLS), faqSchemaFromEntries(HUB_FAQS)]}
+>
+  <section id="intro" class="mx-auto max-w-3xl px-6 pb-4 pt-6">
+    <h1 class="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
+      Markdown tools: free online Markdown converters
+    </h1>
+    <p class="mt-4 text-base text-muted-foreground">
+      A small set of focused, online Markdown converters that run entirely in your
+      browser — for people who write in Markdown but keep having to hand their work
+      to systems that do not read it, and for people who receive documents in
+      formats they would rather edit as plain text.
+    </p>
+    <p class="mt-4 text-sm leading-relaxed text-foreground/85">
+      If you draft in Obsidian or any plain-text editor, you know the friction: the
+      client wants a Word file, and the archived spec only exists as a PDF. These
+      tools move text between those formats while keeping the structure that makes
+      it worth moving.
+    </p>
+  </section>
+
+  <!-- TOOL CARDS -->
+  <section id="tools" class="mx-auto max-w-3xl px-6 py-8">
+    <h2 class="sr-only">Available Markdown converters</h2>
+
+    <div class="grid gap-5">
+      {
+        TOOLS.map((tool) => (
+          <article class="rounded-2xl border border-border bg-card p-6 shadow-sm">
+            <h3 class="text-xl font-semibold tracking-tight">
+              <a href={tool.path} class="hover:underline underline-offset-4">
+                {tool.h1}
+              </a>
+            </h3>
+            <p class="mt-2 text-sm text-muted-foreground">{tool.summary}</p>
+
+            <dl class="mt-5 space-y-4 text-sm">
+              <div>
+                <dt class="font-medium text-foreground">Best for</dt>
+                <dd class="mt-1 text-foreground/80">{tool.bestFor}</dd>
+              </div>
+              <div>
+                <dt class="font-medium text-foreground">Key features</dt>
+                <dd class="mt-1">
+                  <ul class="space-y-1 text-foreground/80">
+                    {tool.keyFeatures.map((feature) => (
+                      <li class="flex gap-2">
+                        <span aria-hidden="true" class="text-[var(--accent)]">—</span>
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+              <div>
+                <dt class="font-medium text-foreground">Privacy</dt>
+                <dd class="mt-1 text-foreground/80">{tool.privacyNote}</dd>
+              </div>
+            </dl>
+
+            <a
+              href={tool.path}
+              class="mt-6 inline-flex h-9 items-center justify-center gap-2 rounded-full bg-primary px-5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              {tool.ctaLabel}
+              <span aria-hidden="true">→</span>
+            </a>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <ToolSection
+    id="comparison"
+    title="Compare the tools"
+    lead="Same guarantees, opposite directions."
+  >
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">&nbsp;</th>
+          {TOOLS.map((tool) => <th scope="col">{tool.shortName}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Input</th>
+          {TOOLS.map((tool) => <td>{tool.input}</td>)}
+        </tr>
+        <tr>
+          <th scope="row">Output</th>
+          {TOOLS.map((tool) => <td>{tool.output}</td>)}
+        </tr>
+        <tr>
+          <th scope="row">Processed in browser</th>
+          {TOOLS.map(() => <td>Yes — nothing uploaded</td>)}
+        </tr>
+        <tr>
+          <th scope="row">Best use case</th>
+          {TOOLS.map((tool) => <td>{tool.bestFor}</td>)}
+        </tr>
+        <tr>
+          <th scope="row">Main limitation</th>
+          {TOOLS.map((tool) => <td>{tool.mainLimitation}</td>)}
+        </tr>
+      </tbody>
+    </table>
+  </ToolSection>
+
+  <ToolSection id="why" title="Why use mdburst Markdown tools">
+    <p>
+      Most online Markdown converters wrap a server-side library: you upload a
+      file, something happens on a machine you do not control, and a result comes
+      back. Fine for a blog post; unacceptable for a contract or an unpublished
+      draft under NDA. These run in your browser instead, which has three
+      consequences:
+    </p>
+    <ul>
+      <li>
+        <strong>Confidential material stays confidential</strong> — not as a
+        policy you must trust, but because there is no endpoint to send it to.
+      </li>
+      <li>
+        <strong>They work offline</strong> once loaded — useful on a plane or a
+        locked-down corporate network.
+      </li>
+      <li>
+        <strong>Your device does the work</strong>, which is why size limits
+        exist. A 500-page PDF is real computation.
+      </li>
+    </ul>
+    <p>
+      They also aim at <em>structure</em>, not visual approximation. Anything can
+      put Markdown source into a Word file; producing one whose headings are real
+      Heading styles is the part that saves you an afternoon.
+    </p>
+  </ToolSection>
+
+  <ToolSection id="workflows" title="Common workflows">
+    <p>Three patterns account for most of how people use these together:</p>
+    <ul>
+      <li>
+        <strong>Reclaiming an archived document.</strong> A spec exists only as a
+        PDF. Run it through the
+        <a href={pdf.path}>PDF to Markdown converter</a> and you have text you can
+        diff and version-control.
+      </li>
+      <li>
+        <strong>Delivering to a Word-based reviewer.</strong> You write in
+        Markdown; your client works in Word with tracked changes.
+        <a href={docx.path}>Markdown to DOCX</a> gives them a real document to
+        mark up.
+      </li>
+      <li>
+        <strong>PDF to Word, via Markdown.</strong> Converting straight to Word
+        carries the PDF's layout quirks along. Going through Markdown strips it to
+        structure and text first, so you fix headings and tables while they are
+        still cheap to edit.
+      </li>
+    </ul>
+  </ToolSection>
+
+  <ToolSection id="choosing" title="Choosing the right tool">
+    <p>It comes down to which end you are starting from:</p>
+    <ul>
+      <li>
+        A file someone sent you, and you want editable text →
+        <a href={pdf.path}>PDF to Markdown</a>. Check its
+        <a href={`${pdf.path}#limitations`}>limitations</a> first if the document
+        is scanned or multi-column — the two cases where it disappoints.
+      </li>
+      <li>
+        Your own Markdown, and someone needs a document →
+        <a href={docx.path}>Markdown to DOCX</a>. See
+        <a href={`${docx.path}#supported-formatting`}>supported formatting</a> to
+        confirm the elements you rely on are covered.
+      </li>
+      <li>
+        Neither — the real problem is publishing one draft to several places every
+        week → that is what <a href="/#how">mdburst</a> is for.
+      </li>
+    </ul>
+  </ToolSection>
+
+  <ToolSection id="privacy" title="Privacy and file handling">
+    <p>
+      The same handling applies to every tool here. Your file is read locally
+      through the browser's File API; parsing and generation happen in the page or
+      in a worker served from this origin; the result comes back as a local
+      download or as text on screen. No copy is transmitted, stored or retained,
+      and nothing persists once you close the tab.
+    </p>
+    <p>
+      The site does collect anonymous usage analytics — which tool was opened,
+      whether a conversion succeeded, roughly how large the input was — so we know
+      which converters are worth maintaining. Never your filenames or content.
+    </p>
+  </ToolSection>
+
+  <Faq faqs={HUB_FAQS} />
+
+  <ToolSection id="related-guides" title="Related guides">
+    <p>The detailed explanations sit on each tool's page, beside the converter:</p>
+    <ul>
+      <li>
+        <a href={`${pdf.path}#how-it-works`}>How PDF to Markdown conversion works</a>
+        — heading inference and table reconstruction.
+      </li>
+      <li>
+        <a href={`${pdf.path}#limitations`}>Limits of PDF text extraction</a> —
+        scans, multi-column layouts, lost emphasis.
+      </li>
+      <li>
+        <a href={`${docx.path}#how-it-works`}>How Markdown becomes a Word document</a>
+        — mapping a syntax tree onto Office Open XML.
+      </li>
+      <li>
+        <a href={`${docx.path}#example`}>A worked Markdown to DOCX example</a> —
+        nested lists, a quotation and an aligned table.
+      </li>
+    </ul>
+    <p>
+      For the product these came out of, see
+      <a href="/#how">how mdburst works</a> or
+      <a href="/#waitlist">join the waitlist</a>.
+    </p>
+  </ToolSection>
+</ToolLayout>

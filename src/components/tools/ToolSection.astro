@@ -1,0 +1,22 @@
+---
+// Content section wrapper for /tools/* pages. Keeps heading rhythm, width and
+// prose styling identical across both tools without repeating class strings.
+interface Props {
+  id: string;
+  title: string;
+  lead?: string;
+  /** Heading level for the section title. */
+  level?: 2 | 3;
+}
+
+const { id, title, lead, level = 2 } = Astro.props;
+const Heading = `h${level}` as "h2" | "h3";
+---
+
+<section id={id} class="mx-auto max-w-3xl px-6 py-10 sm:py-12">
+  <Heading class="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</Heading>
+  {lead && <p class="mt-3 text-base text-muted-foreground">{lead}</p>}
+  <div class="tool-prose mt-6 space-y-4 text-sm leading-relaxed text-foreground/85">
+    <slot />
+  </div>
+</section>

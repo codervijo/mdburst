@@ -24,6 +24,7 @@ export function Nav() {
           <Logo />
         </a>
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
+          <a href="/tools/" className="transition-colors hover:text-foreground">Tools</a>
           <a href="#features" className="transition-colors hover:text-foreground">Features</a>
           <a href="#how" className="transition-colors hover:text-foreground">How it works</a>
           <a href="#pricing" className="transition-colors hover:text-foreground">Pricing</a>

@@ -1,0 +1,80 @@
+---
+// Shared shell for /tools/* pages: head metadata, structured data, chrome and
+// breadcrumbs. Mirrors the prop shape of the workspace's other Astro SEO
+// layouts (see calcengine.site/src/layouts/BaseLayout.astro) while rendering
+// through mdburst's own Layout.astro so the design tokens stay shared.
+import Layout from "./Layout.astro";
+import ToolNav from "../components/tools/ToolNav.astro";
+import ToolFooter from "../components/tools/ToolFooter.astro";
+import Breadcrumbs from "../components/tools/Breadcrumbs.astro";
+import { SITE_URL } from "../data/tools";
+import { breadcrumbSchema, type BreadcrumbEntry } from "../lib/schema";
+
+interface Props {
+  title: string;
+  description: string;
+  /** Canonical path, e.g. "/tools/pdf-to-markdown/". */
+  path: string;
+  breadcrumbs: BreadcrumbEntry[];
+  /** Page-specific JSON-LD. BreadcrumbList is added automatically. */
+  jsonLd?: (Record<string, unknown> | undefined)[];
+  ogType?: string;
+}
+
+const { title, description, path, breadcrumbs, jsonLd = [], ogType = "website" } = Astro.props;
+
+const canonical = `${SITE_URL}${path}`;
+const gaId = import.meta.env.PUBLIC_GA_ID ?? import.meta.env.VITE_GA_ID;
+
+// Breadcrumb markup is generated from the same array the visible trail renders.
+const graphs = [breadcrumbSchema(breadcrumbs), ...jsonLd].filter(Boolean);
+---
+
+<Layout>
+  <Fragment slot="head">
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="mdburst.com" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    {graphs.map((graph) => (
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(graph)} />
+    ))}
+
+    {
+      gaId && (
+        <>
+          <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} />
+          <script is:inline define:vars={{ gaId }}>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { window.dataLayer.push(arguments); }
+            gtag('js', new Date());
+            gtag('config', gaId);
+          </script>
+        </>
+      )
+    }
+  </Fragment>
+
+  <div class="min-h-screen bg-background text-foreground">
+    <ToolNav />
+    <Breadcrumbs trail={breadcrumbs} />
+    <main id="main">
+      <slot />
+    </main>
+    <ToolFooter />
+  </div>
+</Layout>

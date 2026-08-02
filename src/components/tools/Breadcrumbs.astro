@@ -1,0 +1,31 @@
+---
+// Visible breadcrumb trail. The matching BreadcrumbList JSON-LD is emitted by
+// ToolLayout from the same `trail` array, so the two can't drift.
+import type { BreadcrumbEntry } from "../../lib/schema";
+
+interface Props {
+  trail: BreadcrumbEntry[];
+}
+
+const { trail } = Astro.props;
+const last = trail.length - 1;
+---
+
+<nav aria-label="Breadcrumb" class="mx-auto max-w-6xl px-6 pt-24 sm:pt-28">
+  <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+    {
+      trail.map((entry, index) => (
+        <li class="flex items-center gap-2">
+          {index === last ? (
+            <span aria-current="page" class="text-foreground/80">{entry.name}</span>
+          ) : (
+            <a href={entry.path} class="transition-colors hover:text-foreground">
+              {entry.name}
+            </a>
+          )}
+          {index !== last && <span aria-hidden="true" class="text-border">/</span>}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
