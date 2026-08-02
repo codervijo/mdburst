@@ -87,7 +87,7 @@ docker exec -w /usr/src/app <name> make test proj=mdburst.com
   POSTs to the CF Pages API with `build_command="pnpm run build"` set explicitly
   (avoids the bun-detection trap kwizicle.com hit). Idempotent; safe to re-run.
 - **Vite version:** must be ≥ 6.0.0 — Wrangler's Vite integration rejects Vite 5.
-- **Env vars:** set `VITE_*` vars (e.g. `VITE_GA_ID`) in the Cloudflare Workers project's environment-variable settings — they're inlined at build time.
+- **Env vars:** set them in the Cloudflare Workers project's environment-variable settings — they're inlined at build time. Astro only exposes `PUBLIC_*` vars to client code, so the GA measurement ID is `PUBLIC_GA_ID` (`VITE_GA_ID` is still read as a fallback for parity with the sibling Vite sites). See `.env.example`.
 - **Live URL:** https://mdburst.com/  *(update once first deploy succeeds)*
 - **Legacy:** if a `vercel.json` or `.vercelignore` is present from a Lovable export, it's inert on Cloudflare and safe to delete.
 

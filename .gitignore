@@ -11,6 +11,9 @@ build/
 .env.*
 *.env
 *.env.*
+# ...but the template is documentation, not a secret: it records which vars
+# the project reads (PUBLIC_GA_ID, etc.) and must be committed.
+!.env.example
 
 # Editor / OS
 .DS_Store
