@@ -1,9 +1,27 @@
+// wrangler.jsonc
+//
+// NOTE: Cloudflare Pages does not read this file. The build log reports
+// "A Wrangler configuration file was found but it does not appear to be
+// valid... Skipping file and continuing" — Pages expects `pages_build_output_dir`,
+// not the Workers `assets` block. The live deploy is driven by the Pages
+// project's own build config (`pnpm run build` -> `dist`), which the portfolio
+// CLI set when it created the project.
+//
+// The file is kept because it is the schema the site would need if it ever
+// moves to Workers Static Assets, but it must not be treated as the source of
+// truth for the current deploy.
+//
+// `not_found_handling: "single-page-application"` was removed deliberately:
+// it was inherited from the TanStack Start origin, but this is a static
+// multi-page Astro site with no client-side routing. Unmatched routes must
+// return a real 404 (served from dist/404.html, built by src/pages/404.astro),
+// not the homepage with HTTP 200 — soft 404s let any mistyped URL become an
+// indexable duplicate of the homepage.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "mdburst",
   "compatibility_date": "2026-06-05",
   "assets": {
-    "directory": "./dist",
-    "not_found_handling": "single-page-application"
+    "directory": "./dist"
   }
 }

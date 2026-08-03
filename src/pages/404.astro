@@ -1,0 +1,82 @@
+---
+// src/pages/404.astro
+//
+// Emits dist/404.html, which is what actually fixes the soft-404 problem:
+// Cloudflare Pages serves index.html with HTTP 200 for unmatched routes when
+// the build output contains no 404.html. With this file present it serves this
+// page with a real 404 status instead, so mistyped and stale URLs stop being
+// indexable duplicates of the homepage.
+//
+// Deliberately static — no islands, no schema, and noindex. A 404 should be
+// cheap to serve and must never enter the index itself.
+import Layout from "../layouts/Layout.astro";
+import ToolNav from "../components/tools/ToolNav.astro";
+import ToolFooter from "../components/tools/ToolFooter.astro";
+import { TOOLS } from "../data/tools";
+
+const title = "Page not found (404) | mdburst";
+---
+
+<Layout>
+  <Fragment slot="head">
+    <title>{title}</title>
+    <meta name="description" content="That page doesn't exist on mdburst.com." />
+    <meta name="robots" content="noindex, follow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </Fragment>
+
+  <div class="min-h-screen bg-background text-foreground">
+    <ToolNav />
+
+    <main id="main" class="mx-auto max-w-3xl px-6 pb-16 pt-32 sm:pt-40">
+      <p class="text-sm font-medium text-muted-foreground">404</p>
+      <h1 class="mt-2 text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
+        That page doesn't exist
+      </h1>
+      <p class="mt-4 text-base text-muted-foreground">
+        The link may be out of date, or the address may have a typo in it.
+        Here is everything that does exist:
+      </p>
+
+      <ul class="mt-8 grid gap-3">
+        <li>
+          <a
+            href="/"
+            class="block rounded-xl border border-border bg-card p-4 transition-colors hover:border-foreground/25 hover:bg-muted/40"
+          >
+            <span class="block text-sm font-medium text-foreground">mdburst home</span>
+            <span class="mt-1 block text-xs text-muted-foreground">
+              Write once in Markdown, publish everywhere.
+            </span>
+          </a>
+        </li>
+        {
+          TOOLS.map((tool) => (
+            <li>
+              <a
+                href={tool.path}
+                class="block rounded-xl border border-border bg-card p-4 transition-colors hover:border-foreground/25 hover:bg-muted/40"
+              >
+                <span class="block text-sm font-medium text-foreground">{tool.h1}</span>
+                <span class="mt-1 block text-xs text-muted-foreground">{tool.summary}</span>
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <a
+            href="/tools/"
+            class="block rounded-xl border border-border bg-card p-4 transition-colors hover:border-foreground/25 hover:bg-muted/40"
+          >
+            <span class="block text-sm font-medium text-foreground">All free Markdown tools</span>
+            <span class="mt-1 block text-xs text-muted-foreground">
+              Every converter on mdburst, in one place.
+            </span>
+          </a>
+        </li>
+      </ul>
+    </main>
+
+    <ToolFooter />
+  </div>
+</Layout>

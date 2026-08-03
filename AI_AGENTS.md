@@ -77,8 +77,9 @@ docker exec -w /usr/src/app <name> make test proj=mdburst.com
 
 ## Deployment info
 
-- **Platform:** Cloudflare Workers (Static Assets) — *not* Vercel.
-- **Config:** `wrangler.jsonc` at the repo root — points `assets.directory` at `./dist` and uses `not_found_handling: "single-page-application"` for SPA client-side routing.
+- **Platform:** Cloudflare **Pages** — *not* Vercel, and not Workers Static Assets. Verified against the CF API: project `mdburst`, production branch `main`, domains `mdburst.pages.dev` + `mdburst.com`.
+- **Config:** the Pages project's own build config is authoritative — `build_command: "pnpm run build"`, `destination_dir: "dist"` — set by the portfolio CLI at creation. **`wrangler.jsonc` is NOT read by Pages**; the build log reports it as invalid and skips it (Pages wants `pages_build_output_dir`, not a Workers `assets` block). Don't "fix" a deploy by editing that file — it does nothing today.
+- **404s:** Pages serves `index.html` with HTTP 200 for unmatched routes *only when the output has no `404.html`*. `src/pages/404.astro` exists to prevent that; without it every mistyped URL is a soft 404 duplicating the homepage. There is no SPA setting on the project to toggle — the presence of `dist/404.html` is the whole mechanism.
 - **Headers:** `public/_headers` — cache (`/assets/*` immutable, HTML no-cache) + security headers (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`). Vite copies `public/` into `dist/` at build, so the file ships with the assets.
 - **Build:** `pnpm build` → `dist/`. Wrangler picks up `dist/` via `wrangler.jsonc`.
 - **Deploy:** `wrangler deploy` (locally) or via Cloudflare's Git integration on push.
