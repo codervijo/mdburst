@@ -62,5 +62,20 @@ https://search.google.com/search-console directly.
 - **KPI:** any GSC traffic — clicks, impressions, indexed-page count
 - **Baseline:** 0 clicks / 0 impressions (just deployed)
 - **Action:** project scaffolded via `portfolio new bootstrap`; first deploy pending. After deploy: verify in GSC as `sc-domain:mdburst.com` and submit the sitemap.
-- **Result:** TBD — review 2026-07-03
+- **Result:** Review deferred at 2026-08-02. Not measurable: the GSC property for `sc-domain:mdburst.com` has still not been verified, so there is no clicks/impressions data to compare against — no numbers are recorded here rather than assuming zero. The `lamill.toml` todos for GSC verification and sitemap submission are both still `open`. Two structural blockers were also found and fixed after this entry was written: `public/sitemap.xml` was a hand-written stub shadowing the `@astrojs/sitemap` index (fixed 922e09a), and the IndexNow key file was untracked so it never deployed (fixed 273139e).
+- **Learning:** The hypothesis is still untested — this measured nothing about the market, only that the measurement pipeline was never connected. Verifying GSC is a hard prerequisite for every subsequent entry on this site, including the 2026-08-02 one below. Worth carrying to sister sites: confirm the property is verified and the sitemap is accepted *before* logging a baseline, otherwise the review date arrives with nothing to read.
+
+## 2026-08-02 — Free client-side converters as low-KD search entry points
+- **Status:** active
+- **Hypothesis:** The people who need a PDF-to-Markdown or Markdown-to-Word converter are, disproportionately, markdown-first publishers — the same ICP mdburst sells to. Shipping genuinely useful free tools against low-difficulty keywords should attract them at the moment they are feeling an adjacent version of the problem mdburst solves, at a fraction of the cost of ranking for the head term "markdown publishing workflow".
+- **KPI:** GSC clicks and impressions for "PDF to Markdown", "Convert PDF to Markdown" and "Markdown to DOCX"; indexed-page count for the three `/tools/*` URLs; and the `product_cta_clicked` GA4 event as the conversion signal from tool user → waitlist.
+- **Baseline:** None recorded. GSC is not yet verified for this property (see the 2026-06-05 entry), so there is no search data to baseline against. GA4 is also unset — `PUBLIC_GA_ID` has no value in the Cloudflare environment yet, so the analytics module no-ops. Both must be connected before this entry can be reviewed.
+- **Action:** Shipped `v1.A` — three new indexable pages: `/tools/pdf-to-markdown/`, `/tools/markdown-to-docx/`, and a `/tools/` topical hub. Copy is server-rendered (only the converter widget hydrates), 1584 / 1311 / 1198 words respectively. Each page carries a unique title and meta description, canonical, OG + Twitter tags, visible breadcrumbs with matching BreadcrumbList, WebApplication or ItemList, and FAQPage generated from the same array the visible FAQ renders from. All three are in `sitemap-0.xml`. Internal links run both ways between the tools, the hub, and the landing page. Chose targets on keyword difficulty: "PDF to Markdown" (SV 2.8K, KD 3) is the volume play, "Markdown to DOCX" (SV 450, KD 5) the qualifier.
+- **Result:** TBD — review 2026-08-30
 - **Learning:** TBD
+
+**Prerequisites before the review date is meaningful:**
+
+1. Verify `sc-domain:mdburst.com` in GSC and submit `sitemap-index.xml`.
+2. Set `PUBLIC_GA_ID` in the Cloudflare project so the eight tool events actually record.
+3. Confirm the tools work in a real browser — the in-browser path (pdf.js worker startup, `.docx` download) has not been exercised outside Node, and a tool that fails on load will read as "no demand" in the data when it is really a bug.
